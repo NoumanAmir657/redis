@@ -217,6 +217,9 @@ void menu() {
     cout << "7.  zscore <zset_name> <name>                           ---> gets the score of <name> node from given zset" << endl;
     cout << "8.  zquery <zset_name> <score> <name> <offset> <limit>  ---> sets the value of the given key" << endl;
     cout << "10. pexpire <key> <millisecond>                         ---> sets the ttl time for a key" << endl;
+    cout << "12. pttl <key>                                          ---> returns the time left to expire" << endl;
+    cout << "11. exit                                                ---> disconnects the client from the cache server" << endl;
+    cout << endl;
 }
 
 int main(int argc, char **argv) {
