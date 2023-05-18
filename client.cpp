@@ -1,3 +1,6 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -13,6 +16,7 @@
 // proj
 #include "common.h"
 
+using namespace std;
 
 static void msg(const char *msg) {
     fprintf(stderr, "%s\n", msg);
@@ -201,6 +205,20 @@ static int32_t read_res(int fd) {
     return rv;
 }
 
+void menu() {
+    cout << "Redis" << endl << endl;
+    cout << "Commands:" << endl;
+    cout << "1.  keys                                                ---> displays the keys currently in the cache" << endl;
+    cout << "2.  get <key>                                           ---> retrieves the value of the given key" << endl;
+    cout << "3.  set <key> <value>                                   ---> sets the value of the given key" << endl;
+    cout << "4.  del <key>                                           ---> deletes the key and the corresponding value" << endl;
+    cout << "5.  zadd <zset_name> <score> <name>                     ---> adds a given name and score pair in zset" << endl;
+    cout << "6.  zrem <zset_name> <name>                             ---> deletes the node with <name> from given zset" << endl;
+    cout << "7.  zscore <zset_name> <name>                           ---> gets the score of <name> node from given zset" << endl;
+    cout << "8.  zquery <zset_name> <score> <name> <offset> <limit>  ---> sets the value of the given key" << endl;
+    cout << "10. pexpire <key> <millisecond>                         ---> sets the ttl time for a key" << endl;
+}
+
 int main(int argc, char **argv) {
     int fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd < 0) {
@@ -216,17 +234,26 @@ int main(int argc, char **argv) {
         die("connect");
     }
 
-    std::vector<std::string> cmd;
-    for (int i = 1; i < argc; ++i) {
-        cmd.push_back(argv[i]);
-    }
-    int32_t err = send_req(fd, cmd);
-    if (err) {
-        goto L_DONE;
-    }
-    err = read_res(fd);
-    if (err) {
-        goto L_DONE;
+    menu();
+    while (1) {
+        string line;
+        cout << "Enter command:\n";
+        getline(cin, line);
+        stringstream ss(line);
+        string tmp;
+        std::vector<std::string> cmd;   
+        while(getline(ss, tmp, ' ')) {
+            cmd.push_back(tmp);
+        }
+
+        int32_t err = send_req(fd, cmd);
+        if (err) {
+            goto L_DONE;
+        }
+        err = read_res(fd);
+        if (!err) {
+            goto L_DONE;
+        }
     }
 
 L_DONE:
