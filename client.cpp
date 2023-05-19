@@ -249,6 +249,10 @@ int main(int argc, char **argv) {
             cmd.push_back(tmp);
         }
 
+        if (cmd[0] == "exit") {
+            goto L_DONE;
+        }
+
         int32_t err = send_req(fd, cmd);
         if (err) {
             goto L_DONE;
